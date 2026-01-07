@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import Button from "./Button";
 
 type FieldName = "name" | "email" | "company" | "challenge" | "message";
@@ -48,8 +47,7 @@ function validate(values: FormState): FormErrors {
 }
 
 export default function ContactForm() {
-  const searchParams = useSearchParams();
-  const submitted = searchParams.get("success") === "1";
+  const [submitted, setSubmitted] = useState(false);
 
   const [values, setValues] = useState<FormState>(INITIAL_STATE);
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
@@ -64,11 +62,18 @@ export default function ContactForm() {
   }, [errors, touched]);
 
   useEffect(() => {
-    if (submitted) {
-      // Make success state unmissable after redirect from Netlify.
-      const el = document.getElementById("contact-success");
-      el?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    // Netlify redirects back to /contact?success=1. Detect that client-side.
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const ok = params.get("success") === "1";
+    setSubmitted(ok);
+  }, []);
+
+  useEffect(() => {
+    if (!submitted) return;
+    // Make success state unmissable after redirect from Netlify.
+    const el = document.getElementById("contact-success");
+    el?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [submitted]);
 
   useEffect(() => {
