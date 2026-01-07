@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://coulsycode.com/sitemap.xml",
+    sitemap: "https://coulsycode.co.uk/sitemap.xml",
   };
 }
 

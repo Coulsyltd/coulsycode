@@ -1,16 +1,21 @@
 export default function StructuredData() {
+  const PHONE_DISPLAY = "07544 030486";
+  const PHONE_TEL = "+447544030486";
+
   const schemas = [
     {
       "@context": "https://schema.org",
       "@type": "Organization",
       name: "Coulsy Code",
-      url: "https://coulsycode.com",
+      url: "https://coulsycode.co.uk",
+      telephone: PHONE_TEL,
       sameAs: ["https://www.linkedin.com/in/robert-coulson-20a60915/"],
       contactPoint: [
         {
           "@type": "ContactPoint",
           contactType: "sales",
-          email: "info@coulsycode.com",
+          email: "info@coulsycode.co.uk",
+          telephone: PHONE_DISPLAY,
           availableLanguage: ["en-GB"],
         },
       ],
@@ -19,7 +24,7 @@ export default function StructuredData() {
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
       name: "Coulsy Code",
-      url: "https://coulsycode.com",
+      url: "https://coulsycode.co.uk",
       areaServed: [
         { "@type": "City", name: "York" },
         { "@type": "AdministrativeArea", name: "Yorkshire" },
@@ -31,7 +36,8 @@ export default function StructuredData() {
         addressRegion: "North Yorkshire",
         addressCountry: "GB",
       },
-      email: "info@coulsycode.com",
+      email: "info@coulsycode.co.uk",
+      telephone: PHONE_TEL,
       serviceType: [
         "Web development",
         "Web applications",
@@ -43,7 +49,7 @@ export default function StructuredData() {
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: "Coulsy Code",
-      url: "https://coulsycode.com",
+      url: "https://coulsycode.co.uk",
     },
   ];
 

@@ -1,6 +1,6 @@
 # Coulsy Code - Web Development Portfolio
 
-**Domain:** coulsycode.com (to be registered)  
+**Domain:** coulsycode.co.uk  
 **Tech Stack:** Next.js 16, React 19, TypeScript, Tailwind CSS  
 **Purpose:** Enterprise web development portfolio site
 

@@ -1,7 +1,7 @@
 # Netlify Deployment Guide for Next.js 🚀
 
 **Date:** January 2026  
-**Site:** coulsycode.com  
+**Site:** coulsycode.co.uk  
 **Hosting:** Netlify (same as Astro sites)
 
 ---

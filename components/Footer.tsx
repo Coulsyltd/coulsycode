@@ -50,6 +50,24 @@ export default function Footer() {
             <p className="text-sm leading-6 text-gray-400 max-w-xs">
               Solving business problems with clean web builds. I focus on work that brings in enquiries and helps you grow revenue.
             </p>
+            <div className="space-y-2 text-sm">
+              <a
+                href="tel:07544030486"
+                className="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors duration-200"
+              >
+                <span className="font-semibold">Call:</span>
+                <span>07544 030486</span>
+              </a>
+              <div>
+                <a
+                  href="mailto:info@coulsycode.co.uk"
+                  className="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors duration-200"
+                >
+                  <span className="font-semibold">Email:</span>
+                  <span>info@coulsycode.co.uk</span>
+                </a>
+              </div>
+            </div>
             <div className="flex space-x-6">
               <a href="https://www.linkedin.com/in/robert-coulson-20a60915/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-300">
                 <span className="sr-only">LinkedIn</span>

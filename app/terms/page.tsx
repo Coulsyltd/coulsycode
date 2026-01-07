@@ -82,7 +82,7 @@ export default function TermsPage() {
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">Contact Us</h2>
                 <p className="leading-relaxed">
                   If you have questions about these Terms of Service, please contact us at 
-                  <a href="mailto:info@coulsycode.com" className="text-blue-600 hover:underline"> info@coulsycode.com</a>.
+                  <a href="mailto:info@coulsycode.co.uk" className="text-blue-600 hover:underline"> info@coulsycode.co.uk</a>.
                 </p>
               </div>
             </div>

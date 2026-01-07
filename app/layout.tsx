@@ -13,7 +13,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://coulsycode.com"),
+  metadataBase: new URL("https://coulsycode.co.uk"),
   title: {
     default: "Coulsy Code — Web Development & Local SEO in York",
     template: "%s | Coulsy Code",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    url: "https://coulsycode.com",
+    url: "https://coulsycode.co.uk",
     siteName: "Coulsy Code",
     locale: "en_GB",
     title: "Coulsy Code — Web Development & Local SEO in York",

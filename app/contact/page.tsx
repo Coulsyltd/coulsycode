@@ -128,14 +128,17 @@ export default function ContactPage({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-white p-6 rounded-xl border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Email</h3>
-                <a href="mailto:info@coulsycode.com" className="text-blue-600 hover:underline">
-                  info@coulsycode.com
+                <a href="mailto:info@coulsycode.co.uk" className="text-blue-600 hover:underline">
+                  info@coulsycode.co.uk
                 </a>
               </div>
               <div className="bg-white p-6 rounded-xl border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Response Time</h3>
-                <p className="text-gray-600">
-                  I typically respond within 24 hours during business days.
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Phone</h3>
+                <a href="tel:07544030486" className="text-blue-600 hover:underline">
+                  07544 030486
+                </a>
+                <p className="text-gray-600 mt-2">
+                  If I’m on a call, leave a message and I’ll ring you back.
                 </p>
               </div>
             </div>
