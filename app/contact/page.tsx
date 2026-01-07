@@ -1,32 +1,12 @@
-'use client';
-
-import { useState } from 'react';
 import PageHero from "../../components/PageHero";
 import Button from "../../components/Button";
 
-export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    challenge: '',
-    message: '',
-  });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+export default function ContactPage({
+  searchParams,
+}: {
+  searchParams?: { success?: string };
+}) {
+  const submitted = searchParams?.success === "1";
 
   return (
     <div className="min-h-screen bg-white">
@@ -48,7 +28,21 @@ export default function ContactPage() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form
+                name="contact"
+                method="POST"
+                action="/contact?success=1"
+                data-netlify="true"
+                data-netlify-honeypot="bot-field"
+                className="space-y-6"
+              >
+                {/* Required for Netlify Forms */}
+                <input type="hidden" name="form-name" value="contact" />
+                <p className="hidden">
+                  <label>
+                    Don’t fill this in: <input name="bot-field" />
+                  </label>
+                </p>
                 <div>
                   <label htmlFor="name" className="block text-sm font-semibold text-gray-900 mb-2">
                     Your Name *
@@ -58,8 +52,6 @@ export default function ContactPage() {
                     id="name"
                     name="name"
                     required
-                    value={formData.name}
-                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
                   />
                 </div>
@@ -73,8 +65,6 @@ export default function ContactPage() {
                     id="email"
                     name="email"
                     required
-                    value={formData.email}
-                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
                   />
                 </div>
@@ -87,8 +77,6 @@ export default function ContactPage() {
                     type="text"
                     id="company"
                     name="company"
-                    value={formData.company}
-                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
                   />
                 </div>
@@ -102,8 +90,6 @@ export default function ContactPage() {
                     id="challenge"
                     name="challenge"
                     required
-                    value={formData.challenge}
-                    onChange={handleChange}
                     placeholder="e.g., Not getting found online, low conversion rates, manual processes..."
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
                   />
@@ -118,8 +104,6 @@ export default function ContactPage() {
                     name="message"
                     required
                     rows={6}
-                    value={formData.message}
-                    onChange={handleChange}
                     placeholder="Describe your challenge in more detail..."
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors resize-none"
                   />
