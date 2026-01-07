@@ -3,7 +3,6 @@
 
 [build]
   command = "npm run build"
-  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -11,10 +10,4 @@
 # Next.js Runtime Plugin
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-
-# Redirects for Next.js routing
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/next"
-  status = 200
 
