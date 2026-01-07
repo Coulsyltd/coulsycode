@@ -119,6 +119,8 @@ export default function ContactForm() {
             name="contact"
             method="POST"
             action="/contact?success=1"
+            encType="application/x-www-form-urlencoded"
+            acceptCharset="utf-8"
             data-netlify="true"
             data-netlify-honeypot="bot-field"
             className="space-y-6"
@@ -144,7 +146,8 @@ export default function ContactForm() {
             <input type="hidden" name="form-name" value="contact" />
             <p className="hidden">
               <label>
-                Don’t fill this in: <input name="bot-field" />
+                Don’t fill this in:{" "}
+                <input name="bot-field" autoComplete="off" tabIndex={-1} />
               </label>
             </p>
 
@@ -168,7 +171,7 @@ export default function ContactForm() {
                   setValues((v) => ({ ...v, name: e.target.value }))
                 }
                 onBlur={() => setTouched((t) => ({ ...t, name: true }))}
-                aria-invalid={visibleErrors.name ? "true" : "false"}
+                {...(visibleErrors.name ? { "aria-invalid": "true" } : {})}
                 aria-describedby={visibleErrors.name ? "name-error" : undefined}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
               />
@@ -199,7 +202,7 @@ export default function ContactForm() {
                   setValues((v) => ({ ...v, email: e.target.value }))
                 }
                 onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-                aria-invalid={visibleErrors.email ? "true" : "false"}
+                {...(visibleErrors.email ? { "aria-invalid": "true" } : {})}
                 aria-describedby={visibleErrors.email ? "email-error" : undefined}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
               />
@@ -228,7 +231,7 @@ export default function ContactForm() {
                   setValues((v) => ({ ...v, company: e.target.value }))
                 }
                 onBlur={() => setTouched((t) => ({ ...t, company: true }))}
-                aria-invalid={visibleErrors.company ? "true" : "false"}
+                {...(visibleErrors.company ? { "aria-invalid": "true" } : {})}
                 aria-describedby={
                   visibleErrors.company ? "company-error" : undefined
                 }
@@ -261,7 +264,7 @@ export default function ContactForm() {
                   setValues((v) => ({ ...v, challenge: e.target.value }))
                 }
                 onBlur={() => setTouched((t) => ({ ...t, challenge: true }))}
-                aria-invalid={visibleErrors.challenge ? "true" : "false"}
+                {...(visibleErrors.challenge ? { "aria-invalid": "true" } : {})}
                 aria-describedby={
                   visibleErrors.challenge ? "challenge-error" : undefined
                 }
@@ -294,7 +297,7 @@ export default function ContactForm() {
                   setValues((v) => ({ ...v, message: e.target.value }))
                 }
                 onBlur={() => setTouched((t) => ({ ...t, message: true }))}
-                aria-invalid={visibleErrors.message ? "true" : "false"}
+                {...(visibleErrors.message ? { "aria-invalid": "true" } : {})}
                 aria-describedby={
                   visibleErrors.message ? "message-error" : undefined
                 }
