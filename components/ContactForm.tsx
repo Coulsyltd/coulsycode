@@ -84,18 +84,6 @@ export default function ContactForm() {
     setErrors(validate(values));
   }, [values]);
 
-  const encode = (formData: FormData) => {
-    const params = new URLSearchParams();
-    // Explicitly include all required fields (Netlify needs form-name + all form fields)
-    params.append("form-name", "contact");
-    for (const [key, value] of formData.entries()) {
-      if (typeof value === "string") {
-        params.append(key, value);
-      }
-    }
-    return params.toString();
-  };
-
   if (submitted) {
     return (
       <section className="py-20 lg:py-28 bg-white">
@@ -162,22 +150,14 @@ export default function ContactForm() {
               setSubmitError(null);
 
               try {
-                // Build URL-encoded body exactly as Netlify docs specify
-                const params = new URLSearchParams();
-                params.append("form-name", "contact");
-                params.append("name", values.name.trim());
-                params.append("email", values.email.trim());
-                if (values.company.trim()) params.append("company", values.company.trim());
-                params.append("challenge", values.challenge.trim());
-                params.append("message", values.message.trim());
-                params.append("bot-field", ""); // Honeypot should be empty
-                
-                const body = params.toString();
+                // Get formData directly from the form event, as Netlify docs recommend
+                const myForm = e.target as HTMLFormElement;
+                const formData = new FormData(myForm);
                 
                 const res = await fetch("/", {
                   method: "POST",
                   headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                  body: body,
+                  body: new URLSearchParams(formData).toString(),
                 });
 
                 if (!res.ok) {
