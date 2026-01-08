@@ -21,14 +21,18 @@ export default function ContactForm() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send message");
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || "Failed to send message";
+        console.error("API error:", errorMessage, errorData);
+        throw new Error(errorMessage);
       }
 
       setSubmitted(true);
       setIsSubmitting(false);
     } catch (error) {
       console.error("Form submission error:", error);
-      alert("Something went wrong. Please try again.");
+      const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      alert(message);
       setIsSubmitting(false);
     }
   };

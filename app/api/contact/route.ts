@@ -6,9 +6,12 @@ export async function POST(request: Request) {
     // Initialize Resend only when needed (not during build)
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
-      console.error("RESEND_API_KEY is not set");
+      console.error("RESEND_API_KEY is not set in environment variables");
       return NextResponse.json(
-        { error: "Email service not configured" },
+        { 
+          error: "Email service not configured. Please add RESEND_API_KEY to Netlify environment variables.",
+          hint: "Go to Netlify Dashboard → Site Settings → Environment Variables"
+        },
         { status: 500 }
       );
     }
@@ -62,7 +65,7 @@ ${message}
     if (error) {
       console.error("Resend error:", error);
       return NextResponse.json(
-        { error: "Failed to send email" },
+        { error: "Failed to send email", details: error.message || String(error) },
         { status: 500 }
       );
     }
@@ -70,8 +73,9 @@ ${message}
     return NextResponse.json({ success: true, id: data?.id });
   } catch (error) {
     console.error("Form submission error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
