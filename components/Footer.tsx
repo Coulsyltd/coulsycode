@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Logo from './Logo';
 
 const navigation = {
   solutions: [
@@ -43,9 +44,7 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="space-y-8">
             <div>
-              <Link href="/" className="text-2xl font-bold text-white">
-                Coulsy Code
-              </Link>
+              <Logo href="/" variant="light" className="h-10 w-auto" />
             </div>
             <p className="text-sm leading-6 text-gray-400 max-w-xs">
               Solving business problems with clean web builds. I focus on work that brings in enquiries and helps you grow revenue.
