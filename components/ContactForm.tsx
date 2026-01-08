@@ -48,6 +48,8 @@ function validate(values: FormState): FormErrors {
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const [values, setValues] = useState<FormState>(INITIAL_STATE);
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
@@ -80,6 +82,18 @@ export default function ContactForm() {
     // Live-validate as the user types (errors only show after field is touched).
     setErrors(validate(values));
   }, [values]);
+
+  const encode = (formData: FormData) => {
+    const params = new URLSearchParams();
+    // Explicitly include all required fields (Netlify needs form-name + all form fields)
+    params.append("form-name", "contact");
+    for (const [key, value] of formData.entries()) {
+      if (typeof value === "string") {
+        params.append(key, value);
+      }
+    }
+    return params.toString();
+  };
 
   if (submitted) {
     return (
@@ -124,7 +138,7 @@ export default function ContactForm() {
             data-netlify="true"
             data-netlify-honeypot="bot-field"
             className="space-y-6"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               const nextErrors = validate(values);
               setErrors(nextErrors);
               setTouched({
@@ -139,6 +153,54 @@ export default function ContactForm() {
                 const firstKey = Object.keys(nextErrors)[0] as FieldName;
                 const first = document.getElementById(firstKey);
                 (first as HTMLElement | null)?.focus();
+                return;
+              }
+
+              // Netlify Forms + Next.js: submit via URL-encoded POST so Netlify captures it reliably.
+              e.preventDefault();
+              setIsSubmitting(true);
+              setSubmitError(null);
+
+              try {
+                // Build URL-encoded body from React state (more reliable than FormData with controlled inputs)
+                const params = new URLSearchParams();
+                params.append("form-name", "contact");
+                params.append("name", values.name.trim());
+                params.append("email", values.email.trim());
+                if (values.company.trim()) params.append("company", values.company.trim());
+                params.append("challenge", values.challenge.trim());
+                params.append("message", values.message.trim());
+                // Honeypot should be empty (bot-field)
+                params.append("bot-field", "");
+                
+                const body = params.toString();
+                console.log("Submitting to Netlify:", body);
+                
+                const res = await fetch("/", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                  body: body,
+                });
+                
+                console.log("Netlify response status:", res.status, res.statusText);
+
+                if (!res.ok) {
+                  throw new Error(`Submission failed (${res.status}).`);
+                }
+
+                // Only show success when Netlify has accepted the submission.
+                setSubmitted(true);
+                if (typeof window !== "undefined") {
+                  window.history.replaceState(null, "", "/contact?success=1");
+                }
+              } catch (err) {
+                setSubmitError(
+                  err instanceof Error
+                    ? err.message
+                    : "Submission failed. Please try again."
+                );
+              } finally {
+                setIsSubmitting(false);
               }
             }}
           >
@@ -150,6 +212,19 @@ export default function ContactForm() {
                 <input name="bot-field" autoComplete="off" tabIndex={-1} />
               </label>
             </p>
+
+            {submitError && (
+              <div
+                className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                role="alert"
+              >
+                {submitError} If it keeps failing, email{" "}
+                <a className="underline" href="mailto:info@coulsycode.co.uk">
+                  info@coulsycode.co.uk
+                </a>
+                .
+              </div>
+            )}
 
             <div>
               <label
@@ -311,7 +386,7 @@ export default function ContactForm() {
             </div>
 
             <Button type="submit" size="lg" className="w-full">
-              Send Message
+              {isSubmitting ? "Sending…" : "Send Message"}
             </Button>
           </form>
         </div>
