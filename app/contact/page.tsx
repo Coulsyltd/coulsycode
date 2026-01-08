@@ -9,22 +9,20 @@ export default function ContactPage({
     <div className="min-h-screen bg-white">
       {/* Hidden static HTML form for Netlify form detection at build time */}
       {/* This MUST be in the rendered HTML for Next.js + Netlify Forms to work */}
-      <form
-        name="contact"
-        method="post"
-        data-netlify="true"
-        netlify-honeypot="bot-field"
-        style={{ display: "none" }}
-        aria-hidden="true"
-      >
-        <input type="hidden" name="form-name" value="contact" />
-        <input name="bot-field" />
-        <input type="text" name="name" />
-        <input type="email" name="email" />
-        <input type="text" name="company" />
-        <input type="text" name="challenge" />
-        <textarea name="message"></textarea>
-      </form>
+      {/* Using dangerouslySetInnerHTML to ensure it's in the actual HTML output */}
+      <div
+        dangerouslySetInnerHTML={{
+          __html: `<form name="contact" method="post" data-netlify="true" netlify-honeypot="bot-field" style="display:none" aria-hidden="true">
+  <input type="hidden" name="form-name" value="contact" />
+  <input name="bot-field" />
+  <input type="text" name="name" />
+  <input type="email" name="email" />
+  <input type="text" name="company" />
+  <input type="text" name="challenge" />
+  <textarea name="message"></textarea>
+</form>`,
+        }}
+      />
 
       <PageHero
         title="Let's Talk"
