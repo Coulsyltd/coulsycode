@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Button from "./Button";
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     // Check for success query param from Netlify redirect
@@ -19,114 +16,6 @@ export default function ContactForm() {
       el?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      // Get formData directly from the form event - exactly as Netlify docs show
-      const myForm = e.currentTarget;
-      const formData = new FormData(myForm);
-
-      // Debug: Log what we're sending
-      console.log("FormData entries:", Array.from(formData.entries()));
-
-      // Convert FormData to URLSearchParams (TypeScript-safe)
-      const params = new URLSearchParams();
-      for (const [key, value] of formData.entries()) {
-        params.append(key, value.toString());
-      }
-
-      console.log("Submitting to Netlify:", params.toString());
-
-      // On Netlify, POST to "/" should work, but Next.js might intercept it
-      // Try posting to the form's action directly (which is "/")
-      // Use no-cors mode or ensure it bypasses Next.js routing
-      const response = await fetch("/", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Accept": "text/html" // Tell server we expect HTML response
-        },
-        body: params.toString(),
-        // Don't follow redirects - let Netlify handle it
-        redirect: "manual",
-      });
-
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
-      
-      // Get response text to see what Netlify returned
-      const responseText = await response.text();
-      console.log("Response text (first 500 chars):", responseText.substring(0, 500));
-
-      // Check if this is a redirect (302/301) - Netlify redirects on success
-      if (response.status === 301 || response.status === 302) {
-        const location = response.headers.get("Location");
-        console.log("Netlify redirect to:", location);
-        console.log("✅ Form submitted successfully! Redirecting in 5 seconds...");
-        setTimeout(() => {
-          if (location) {
-            window.location.href = location;
-          } else {
-            window.location.href = "/contact?success=true";
-          }
-        }, 5000);
-      } 
-      // If Next.js returned HTML (200), it means Next.js intercepted the request
-      // In this case, we need to submit the form normally to bypass Next.js
-      else if (response.status === 200 && responseText.includes("<!DOCTYPE html")) {
-        console.warn("⚠️ Next.js intercepted the POST request. Submitting form normally in 5 seconds...");
-        console.log("This will bypass Next.js and let Netlify handle the form directly");
-        // Wait 5 seconds so user can see the console
-        setTimeout(() => {
-          // Next.js intercepted it - submit the form normally instead
-          setIsSubmitting(false);
-          // Programmatically submit the form without preventDefault
-          const form = e.currentTarget;
-          const tempForm = document.createElement("form");
-          tempForm.method = "POST";
-          tempForm.action = "/";
-          tempForm.enctype = "application/x-www-form-urlencoded";
-          tempForm.style.display = "none";
-          
-          // Copy all form data
-          for (const [key, value] of formData.entries()) {
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = key;
-            input.value = value.toString();
-            tempForm.appendChild(input);
-          }
-          
-          document.body.appendChild(tempForm);
-          console.log("Submitting form normally to bypass Next.js...");
-          tempForm.submit();
-        }, 5000);
-        return; // Don't continue with redirect
-      }
-      // Success response
-      else if (response.status >= 200 && response.status < 300) {
-        // Success - but wait 5 seconds so we can see the console logs
-        console.log("✅ Form submitted successfully! Redirecting in 5 seconds...");
-        setTimeout(() => {
-          window.location.href = "/contact?success=true";
-        }, 5000);
-      } else {
-        throw new Error(`Submission failed (${response.status})`);
-      }
-    } catch (error) {
-      console.error("Form submission error:", error);
-      setSubmitError(
-        error instanceof Error
-          ? error.message
-          : "Submission failed. Please try again."
-      );
-      setIsSubmitting(false);
-    }
-  };
 
   if (submitted) {
     return (
@@ -162,14 +51,13 @@ export default function ContactForm() {
     <section className="py-20 lg:py-28 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-2xl mx-auto">
+          {/* Simple form - let browser submit normally, just like the static form */}
           <form
-            ref={formRef}
             name="contact"
             method="post"
             action="/"
             data-netlify="true"
             netlify-honeypot="bot-field"
-            onSubmit={handleSubmit}
             className="space-y-6"
           >
             {/* Required for Netlify Forms */}
@@ -180,19 +68,6 @@ export default function ContactForm() {
                 <input name="bot-field" autoComplete="off" tabIndex={-1} />
               </label>
             </p>
-
-            {submitError && (
-              <div
-                className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
-                role="alert"
-              >
-                {submitError} If it keeps failing, email{" "}
-                <a className="underline" href="mailto:info@coulsycode.co.uk">
-                  info@coulsycode.co.uk
-                </a>
-                .
-              </div>
-            )}
 
             <div>
               <label
@@ -288,7 +163,7 @@ export default function ContactForm() {
             </div>
 
             <Button type="submit" size="lg" className="w-full">
-              {isSubmitting ? "Sending…" : "Send Message"}
+              Send Message
             </Button>
           </form>
         </div>
