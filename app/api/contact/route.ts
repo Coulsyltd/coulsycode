@@ -36,8 +36,9 @@ export async function POST(request: Request) {
 
     // Send email using Resend (like old PHP mail() but modern)
     // Sending to info@coulsycode.co.uk which forwards to robert@coulsy.co.uk via Cloudflare
+    // Using verified domain as sender (coulsycode.co.uk is verified in Resend)
     const { data, error } = await resend.emails.send({
-      from: "Contact Form <onboarding@resend.dev>", // You'll need to verify your domain
+      from: "Contact Form <info@coulsycode.co.uk>",
       to: "info@coulsycode.co.uk",
       replyTo: email,
       subject: `New Contact Form Submission from ${name}`,
