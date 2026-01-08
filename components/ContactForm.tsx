@@ -30,12 +30,16 @@ export default function ContactForm() {
       const myForm = e.currentTarget;
       const formData = new FormData(myForm);
 
-      // Submit to Netlify - exactly as Netlify docs show
+      // Debug: Log what we're sending
+      console.log("FormData entries:", Array.from(formData.entries()));
+
       // Convert FormData to URLSearchParams (TypeScript-safe)
       const params = new URLSearchParams();
       for (const [key, value] of formData.entries()) {
         params.append(key, value.toString());
       }
+
+      console.log("Submitting to Netlify:", params.toString());
 
       const response = await fetch("/", {
         method: "POST",
@@ -43,13 +47,19 @@ export default function ContactForm() {
         body: params.toString(),
       });
 
-      if (!response.ok) {
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+
+      // Netlify forms return 200 even on success, but might return HTML
+      // Check if we got a successful response (200-299)
+      if (response.status >= 200 && response.status < 300) {
+        // Success - redirect to success page
+        window.location.href = "/contact?success=true";
+      } else {
         throw new Error(`Submission failed (${response.status})`);
       }
-
-      // Redirect to success page
-      window.location.href = "/contact?success=true";
     } catch (error) {
+      console.error("Form submission error:", error);
       setSubmitError(
         error instanceof Error
           ? error.message
@@ -97,6 +107,7 @@ export default function ContactForm() {
             ref={formRef}
             name="contact"
             method="post"
+            action="/"
             data-netlify="true"
             netlify-honeypot="bot-field"
             onSubmit={handleSubmit}
