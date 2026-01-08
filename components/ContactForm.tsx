@@ -66,47 +66,54 @@ export default function ContactForm() {
       if (response.status === 301 || response.status === 302) {
         const location = response.headers.get("Location");
         console.log("Netlify redirect to:", location);
-        // Follow Netlify's redirect
-        if (location) {
-          window.location.href = location;
-        } else {
-          window.location.href = "/contact?success=true";
-        }
+        console.log("✅ Form submitted successfully! Redirecting in 5 seconds...");
+        setTimeout(() => {
+          if (location) {
+            window.location.href = location;
+          } else {
+            window.location.href = "/contact?success=true";
+          }
+        }, 5000);
       } 
       // If Next.js returned HTML (200), it means Next.js intercepted the request
       // In this case, we need to submit the form normally to bypass Next.js
       else if (response.status === 200 && responseText.includes("<!DOCTYPE html")) {
-        console.warn("⚠️ Next.js intercepted the POST request. Trying normal form submission...");
-        // Next.js intercepted it - submit the form normally instead
-        // Remove preventDefault and let browser handle it
-        setIsSubmitting(false);
-        // Programmatically submit the form without preventDefault
-        const form = e.currentTarget;
-        const tempForm = document.createElement("form");
-        tempForm.method = "POST";
-        tempForm.action = "/";
-        tempForm.style.display = "none";
-        
-        // Copy all form data
-        for (const [key, value] of formData.entries()) {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = key;
-          input.value = value.toString();
-          tempForm.appendChild(input);
-        }
-        
-        document.body.appendChild(tempForm);
-        tempForm.submit();
+        console.warn("⚠️ Next.js intercepted the POST request. Submitting form normally in 5 seconds...");
+        console.log("This will bypass Next.js and let Netlify handle the form directly");
+        // Wait 5 seconds so user can see the console
+        setTimeout(() => {
+          // Next.js intercepted it - submit the form normally instead
+          setIsSubmitting(false);
+          // Programmatically submit the form without preventDefault
+          const form = e.currentTarget;
+          const tempForm = document.createElement("form");
+          tempForm.method = "POST";
+          tempForm.action = "/";
+          tempForm.enctype = "application/x-www-form-urlencoded";
+          tempForm.style.display = "none";
+          
+          // Copy all form data
+          for (const [key, value] of formData.entries()) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = value.toString();
+            tempForm.appendChild(input);
+          }
+          
+          document.body.appendChild(tempForm);
+          console.log("Submitting form normally to bypass Next.js...");
+          tempForm.submit();
+        }, 5000);
         return; // Don't continue with redirect
       }
       // Success response
       else if (response.status >= 200 && response.status < 300) {
-        // Success - but wait 3 seconds so we can see the console logs
-        console.log("✅ Form submitted successfully! Redirecting in 3 seconds...");
+        // Success - but wait 5 seconds so we can see the console logs
+        console.log("✅ Form submitted successfully! Redirecting in 5 seconds...");
         setTimeout(() => {
           window.location.href = "/contact?success=true";
-        }, 3000);
+        }, 5000);
       } else {
         throw new Error(`Submission failed (${response.status})`);
       }
