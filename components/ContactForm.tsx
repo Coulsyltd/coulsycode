@@ -1,21 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "./Button";
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    // Check for success query param from Netlify redirect
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("success") === "true") {
-      setSubmitted(true);
-      const el = document.getElementById("contact-success");
-      el?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+
+    const myForm = event.target as HTMLFormElement;
+    const formData = new FormData(myForm);
+
+    // Convert FormData to URLSearchParams (TypeScript-safe)
+    const params = new URLSearchParams();
+    for (const [key, value] of formData.entries()) {
+      params.append(key, value.toString());
     }
-  }, []);
+
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    })
+      .then(() => {
+        setSubmitted(true);
+        setIsSubmitting(false);
+      })
+      .catch((error) => {
+        console.error("Form submission error:", error);
+        alert("Something went wrong. Please try again.");
+        setIsSubmitting(false);
+      });
+  };
 
   if (submitted) {
     return (
@@ -23,7 +42,6 @@ export default function ContactForm() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-2xl mx-auto">
             <div
-              id="contact-success"
               className="bg-green-50 border border-green-200 rounded-lg p-8 text-center"
               role="status"
               aria-live="polite"
@@ -51,13 +69,116 @@ export default function ContactForm() {
     <section className="py-20 lg:py-28 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-2xl mx-auto">
-          {/* Use static HTML form that Netlify handles directly (bypasses Next.js routing) */}
-          <iframe
-            src="/contact-form.html"
-            className="w-full border-0"
-            style={{ minHeight: "600px" }}
-            title="Contact Form"
-          />
+          <form
+            name="contact"
+            method="post"
+            data-netlify="true"
+            onSubmit={handleSubmit}
+            className="space-y-6"
+          >
+            <input type="hidden" name="form-name" value="contact" />
+            <p className="hidden">
+              <label>
+                Don't fill this in: <input name="bot-field" />
+              </label>
+            </p>
+
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
+                Your Name *
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                minLength={2}
+                maxLength={120}
+                autoComplete="name"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
+                Email Address *
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                maxLength={254}
+                autoComplete="email"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="company"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
+                Company Name
+              </label>
+              <input
+                type="text"
+                id="company"
+                name="company"
+                maxLength={120}
+                autoComplete="organization"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="challenge"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
+                What&apos;s Your Main Business Challenge? *
+              </label>
+              <input
+                type="text"
+                id="challenge"
+                name="challenge"
+                required
+                minLength={8}
+                maxLength={140}
+                placeholder="e.g., Not getting found online, low conversion rates, manual processes..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="message"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
+                Tell Me More *
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                required
+                minLength={20}
+                maxLength={2000}
+                rows={6}
+                placeholder="A couple of sentences is perfect. What's the goal, and what's not working today?"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-colors resize-none"
+              />
+            </div>
+
+            <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Sending…" : "Send Message"}
+            </Button>
+          </form>
         </div>
       </div>
     </section>
