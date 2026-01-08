@@ -64,10 +64,11 @@ export default function ContactForm() {
   }, [errors, touched]);
 
   useEffect(() => {
-    // Netlify redirects back to /contact?success=1. Detect that client-side.
+    // Netlify redirects back to /contact?success=true (not ?success=1)
+    // This matches the working joinery form behavior
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
-    const ok = params.get("success") === "1";
+    const ok = params.get("success") === "true" || params.get("success") === "1";
     setSubmitted(ok);
   }, []);
 
@@ -132,11 +133,10 @@ export default function ContactForm() {
           <form
             name="contact"
             method="post"
-            action="/contact?success=1"
             data-netlify="true"
             netlify-honeypot="bot-field"
             className="space-y-6"
-            onSubmit={async (e) => {
+            onSubmit={(e) => {
               const nextErrors = validate(values);
               setErrors(nextErrors);
               setTouched({
@@ -146,6 +146,7 @@ export default function ContactForm() {
                 challenge: true,
                 message: true,
               });
+              
               if (Object.keys(nextErrors).length > 0) {
                 e.preventDefault();
                 const firstKey = Object.keys(nextErrors)[0] as FieldName;
@@ -154,50 +155,29 @@ export default function ContactForm() {
                 return;
               }
 
-              // Netlify supports AJAX - keep using it but ensure proper encoding
+              // Validation passed - sync React state to DOM inputs, then submit normally
+              // This matches the working joinery form (standard HTML submission, no AJAX)
               e.preventDefault();
               setIsSubmitting(true);
               setSubmitError(null);
 
-              try {
-                // Build URL-encoded body from React state (Netlify AJAX format)
-                // Use URLSearchParams as Netlify docs specify
-                const params = new URLSearchParams();
-                params.append("form-name", "contact");
-                params.append("name", values.name.trim());
-                params.append("email", values.email.trim());
-                if (values.company.trim()) params.append("company", values.company.trim());
-                params.append("challenge", values.challenge.trim());
-                params.append("message", values.message.trim());
-                params.append("bot-field", ""); // Honeypot should be empty
-                
-                const body = params.toString();
-                console.log("Submitting to Netlify:", body);
-                
-                const res = await fetch("/", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                  body: body,
-                });
-                
-                console.log("Netlify response status:", res.status, res.statusText);
+              // Sync controlled React state to actual DOM form inputs
+              const form = e.currentTarget as HTMLFormElement;
+              const nameInput = form.querySelector('[name="name"]') as HTMLInputElement;
+              const emailInput = form.querySelector('[name="email"]') as HTMLInputElement;
+              const companyInput = form.querySelector('[name="company"]') as HTMLInputElement;
+              const challengeInput = form.querySelector('[name="challenge"]') as HTMLInputElement;
+              const messageInput = form.querySelector('[name="message"]') as HTMLTextAreaElement;
 
-                if (!res.ok) {
-                  throw new Error(`Submission failed (${res.status}).`);
-                }
+              if (nameInput) nameInput.value = values.name.trim();
+              if (emailInput) emailInput.value = values.email.trim();
+              if (companyInput) companyInput.value = values.company.trim();
+              if (challengeInput) challengeInput.value = values.challenge.trim();
+              if (messageInput) messageInput.value = values.message.trim();
 
-                // Redirect to success page (Netlify's standard behavior)
-                if (typeof window !== "undefined") {
-                  window.location.href = "/contact?success=1";
-                }
-              } catch (err) {
-                setSubmitError(
-                  err instanceof Error
-                    ? err.message
-                    : "Submission failed. Please try again."
-                );
-                setIsSubmitting(false);
-              }
+              // Submit the form normally (Netlify will handle redirect to ?success=true)
+              // No action attribute = submits to current page, Netlify redirects automatically
+              form.submit();
             }}
           >
             {/* Required for Netlify Forms */}
