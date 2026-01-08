@@ -55,7 +55,6 @@ export default function ContactForm() {
           <form
             name="contact"
             method="post"
-            action="/"
             data-netlify="true"
             netlify-honeypot="bot-field"
             className="space-y-6"
