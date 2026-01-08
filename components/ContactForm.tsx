@@ -7,33 +7,30 @@ export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
 
     const myForm = event.target as HTMLFormElement;
     const formData = new FormData(myForm);
 
-    // Convert FormData to URLSearchParams (TypeScript-safe)
-    const params = new URLSearchParams();
-    for (const [key, value] of formData.entries()) {
-      params.append(key, value.toString());
-    }
-
-    fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString(),
-    })
-      .then(() => {
-        setSubmitted(true);
-        setIsSubmitting(false);
-      })
-      .catch((error) => {
-        console.error("Form submission error:", error);
-        alert("Something went wrong. Please try again.");
-        setIsSubmitting(false);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+
+      setSubmitted(true);
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      alert("Something went wrong. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -72,16 +69,9 @@ export default function ContactForm() {
           <form
             name="contact"
             method="post"
-            data-netlify="true"
             onSubmit={handleSubmit}
             className="space-y-6"
           >
-            <input type="hidden" name="form-name" value="contact" />
-            <p className="hidden">
-              <label>
-                Don't fill this in: <input name="bot-field" />
-              </label>
-            </p>
 
             <div>
               <label
