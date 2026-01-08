@@ -8,35 +8,36 @@
   <body>
     <!--
       Netlify Forms (Next.js Runtime v5 migration helper)
-      This hidden HTML form allows Netlify to detect the form at deploy time.
+      This static HTML form allows Netlify to detect the form at deploy time.
+      Field names MUST match the React form exactly.
     -->
     <form
       name="contact"
       method="POST"
       data-netlify="true"
       data-netlify-honeypot="bot-field"
-      hidden
+      netlify
     >
       <input type="hidden" name="form-name" value="contact" />
-      <p>
+      <p style="display: none;">
         <label>
-          Don’t fill this in: <input name="bot-field" />
+          Don't fill this in: <input name="bot-field" />
         </label>
       </p>
       <p>
-        <label>Your Name: <input type="text" name="name" /></label>
+        <label>Your Name: <input type="text" name="name" required /></label>
       </p>
       <p>
-        <label>Your Email: <input type="email" name="email" /></label>
+        <label>Your Email: <input type="email" name="email" required /></label>
       </p>
       <p>
         <label>Company: <input type="text" name="company" /></label>
       </p>
       <p>
-        <label>Challenge: <input type="text" name="challenge" /></label>
+        <label>Challenge: <input type="text" name="challenge" required /></label>
       </p>
       <p>
-        <label>Message: <textarea name="message"></textarea></label>
+        <label>Message: <textarea name="message" required></textarea></label>
       </p>
       <p><button type="submit">Send</button></p>
     </form>

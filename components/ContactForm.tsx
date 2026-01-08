@@ -182,7 +182,9 @@ export default function ContactForm() {
                   body: body,
                 });
                 
+                const responseText = await res.text();
                 console.log("Netlify response status:", res.status, res.statusText);
+                console.log("Netlify response body:", responseText.substring(0, 200));
 
                 if (!res.ok) {
                   throw new Error(`Submission failed (${res.status}).`);
