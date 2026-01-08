@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     // Send email using Resend (like old PHP mail() but modern)
     const { data, error } = await resend.emails.send({
       from: "Contact Form <onboarding@resend.dev>", // You'll need to verify your domain
-      to: "info@coulsycode.co.uk",
+      to: "robert@coulsy.co.uk",
       replyTo: email,
       subject: `New Contact Form Submission from ${name}`,
       html: `
