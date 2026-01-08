@@ -131,12 +131,10 @@ export default function ContactForm() {
         <div className="max-w-2xl mx-auto">
           <form
             name="contact"
-            method="POST"
+            method="post"
             action="/contact?success=1"
-            encType="application/x-www-form-urlencoded"
-            acceptCharset="utf-8"
             data-netlify="true"
-            data-netlify-honeypot="bot-field"
+            netlify-honeypot="bot-field"
             className="space-y-6"
             onSubmit={async (e) => {
               const nextErrors = validate(values);
@@ -156,13 +154,14 @@ export default function ContactForm() {
                 return;
               }
 
-              // Netlify Forms + Next.js: submit via URL-encoded POST so Netlify captures it reliably.
+              // Netlify supports AJAX - keep using it but ensure proper encoding
               e.preventDefault();
               setIsSubmitting(true);
               setSubmitError(null);
 
               try {
-                // Build URL-encoded body from React state (more reliable than FormData with controlled inputs)
+                // Build URL-encoded body from React state (Netlify AJAX format)
+                // Use URLSearchParams as Netlify docs specify
                 const params = new URLSearchParams();
                 params.append("form-name", "contact");
                 params.append("name", values.name.trim());
@@ -170,8 +169,7 @@ export default function ContactForm() {
                 if (values.company.trim()) params.append("company", values.company.trim());
                 params.append("challenge", values.challenge.trim());
                 params.append("message", values.message.trim());
-                // Honeypot should be empty (bot-field)
-                params.append("bot-field", "");
+                params.append("bot-field", ""); // Honeypot should be empty
                 
                 const body = params.toString();
                 console.log("Submitting to Netlify:", body);
@@ -182,18 +180,15 @@ export default function ContactForm() {
                   body: body,
                 });
                 
-                const responseText = await res.text();
                 console.log("Netlify response status:", res.status, res.statusText);
-                console.log("Netlify response body:", responseText.substring(0, 200));
 
                 if (!res.ok) {
                   throw new Error(`Submission failed (${res.status}).`);
                 }
 
-                // Only show success when Netlify has accepted the submission.
-                setSubmitted(true);
+                // Redirect to success page (Netlify's standard behavior)
                 if (typeof window !== "undefined") {
-                  window.history.replaceState(null, "", "/contact?success=1");
+                  window.location.href = "/contact?success=1";
                 }
               } catch (err) {
                 setSubmitError(
@@ -201,7 +196,6 @@ export default function ContactForm() {
                     ? err.message
                     : "Submission failed. Please try again."
                 );
-              } finally {
                 setIsSubmitting(false);
               }
             }}
