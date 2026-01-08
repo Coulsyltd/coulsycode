@@ -55,19 +55,14 @@ export default function ContactForm() {
           <form
             name="contact"
             method="post"
-            action="/"
             data-netlify="true"
-            netlify-honeypot="bot-field"
             className="space-y-6"
           >
             {/* Required for Netlify Forms */}
             <input type="hidden" name="form-name" value="contact" />
-            <p className="hidden">
-              <label>
-                Don't fill this in:{" "}
-                <input name="bot-field" autoComplete="off" tabIndex={-1} />
-              </label>
-            </p>
+            <div className="hidden">
+              <input name="bot-field" />
+            </div>
 
             <div>
               <label
