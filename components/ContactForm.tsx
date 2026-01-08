@@ -154,10 +154,16 @@ export default function ContactForm() {
                 const myForm = e.target as HTMLFormElement;
                 const formData = new FormData(myForm);
                 
+                // Convert FormData to URLSearchParams (TypeScript-safe)
+                const params = new URLSearchParams();
+                for (const [key, value] of formData.entries()) {
+                  params.append(key, value.toString());
+                }
+                
                 const res = await fetch("/", {
                   method: "POST",
                   headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                  body: new URLSearchParams(formData).toString(),
+                  body: params.toString(),
                 });
 
                 if (!res.ok) {
