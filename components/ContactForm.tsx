@@ -49,12 +49,19 @@ export default function ContactForm() {
 
       console.log("Response status:", response.status);
       console.log("Response ok:", response.ok);
+      
+      // Get response text to see what Netlify returned
+      const responseText = await response.text();
+      console.log("Response text (first 500 chars):", responseText.substring(0, 500));
 
       // Netlify forms return 200 even on success, but might return HTML
       // Check if we got a successful response (200-299)
       if (response.status >= 200 && response.status < 300) {
-        // Success - redirect to success page
-        window.location.href = "/contact?success=true";
+        // Success - but wait 3 seconds so we can see the console logs
+        console.log("✅ Form submitted successfully! Redirecting in 3 seconds...");
+        setTimeout(() => {
+          window.location.href = "/contact?success=true";
+        }, 3000);
       } else {
         throw new Error(`Submission failed (${response.status})`);
       }
