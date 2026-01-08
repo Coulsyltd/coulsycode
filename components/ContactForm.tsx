@@ -154,6 +154,18 @@ export default function ContactForm() {
                 const myForm = e.target as HTMLFormElement;
                 const formData = new FormData(myForm);
                 
+                // Ensure all values are captured (React controlled inputs may not sync to DOM immediately)
+                // Manually set values from React state to guarantee they're included
+                formData.set("form-name", "contact");
+                formData.set("name", values.name.trim());
+                formData.set("email", values.email.trim());
+                if (values.company.trim()) {
+                  formData.set("company", values.company.trim());
+                }
+                formData.set("challenge", values.challenge.trim());
+                formData.set("message", values.message.trim());
+                formData.set("bot-field", ""); // Honeypot should be empty
+                
                 // Convert FormData to URLSearchParams (TypeScript-safe)
                 const params = new URLSearchParams();
                 for (const [key, value] of formData.entries()) {
