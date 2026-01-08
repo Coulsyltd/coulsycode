@@ -4,15 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact - Coulsy Code</title>
-  <script>
-    // Redirect back to contact page after 3 seconds
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('success') === 'true') {
-      setTimeout(() => {
-        window.location.href = '/contact?success=true';
-      }, 3000);
-    }
-  </script>
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -81,7 +72,7 @@
       <p>Redirecting back to contact page...</p>
     </div>
 
-    <form name="contact" method="post" data-netlify="true" id="contact-form" style="display: none;">
+    <form id="contact-form" method="post" name="contact" data-netlify="true" style="display: none;">
       <input type="hidden" name="form-name" value="contact" />
       <div style="display: none;">
         <input name="bot-field" />
@@ -117,11 +108,15 @@
   </div>
 
   <script>
-    // Check if we're on success page
+    // Check if we're on success page (only declare urlParams once)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
       document.getElementById('success-message').style.display = 'block';
       document.getElementById('contact-form').style.display = 'none';
+      // Redirect back to contact page after 3 seconds
+      setTimeout(() => {
+        window.top.location.href = '/contact?success=true';
+      }, 3000);
     } else {
       document.getElementById('contact-form').style.display = 'block';
     }
