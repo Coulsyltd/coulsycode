@@ -136,7 +136,7 @@ export default function ContactForm() {
             data-netlify="true"
             netlify-honeypot="bot-field"
             className="space-y-6"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               const nextErrors = validate(values);
               setErrors(nextErrors);
               setTouched({
@@ -155,29 +155,47 @@ export default function ContactForm() {
                 return;
               }
 
-              // Validation passed - sync React state to DOM inputs, then submit normally
-              // This matches the working joinery form (standard HTML submission, no AJAX)
+              // Validation passed - submit via AJAX (Netlify supports this)
+              // Using AJAX because Next.js React forms need it (unlike Astro server-rendered forms)
               e.preventDefault();
               setIsSubmitting(true);
               setSubmitError(null);
 
-              // Sync controlled React state to actual DOM form inputs
-              const form = e.currentTarget as HTMLFormElement;
-              const nameInput = form.querySelector('[name="name"]') as HTMLInputElement;
-              const emailInput = form.querySelector('[name="email"]') as HTMLInputElement;
-              const companyInput = form.querySelector('[name="company"]') as HTMLInputElement;
-              const challengeInput = form.querySelector('[name="challenge"]') as HTMLInputElement;
-              const messageInput = form.querySelector('[name="message"]') as HTMLTextAreaElement;
+              try {
+                // Build URL-encoded body exactly as Netlify docs specify
+                const params = new URLSearchParams();
+                params.append("form-name", "contact");
+                params.append("name", values.name.trim());
+                params.append("email", values.email.trim());
+                if (values.company.trim()) params.append("company", values.company.trim());
+                params.append("challenge", values.challenge.trim());
+                params.append("message", values.message.trim());
+                params.append("bot-field", ""); // Honeypot should be empty
+                
+                const body = params.toString();
+                
+                const res = await fetch("/", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                  body: body,
+                });
 
-              if (nameInput) nameInput.value = values.name.trim();
-              if (emailInput) emailInput.value = values.email.trim();
-              if (companyInput) companyInput.value = values.company.trim();
-              if (challengeInput) challengeInput.value = values.challenge.trim();
-              if (messageInput) messageInput.value = values.message.trim();
+                if (!res.ok) {
+                  throw new Error(`Submission failed (${res.status}).`);
+                }
 
-              // Submit the form normally (Netlify will handle redirect to ?success=true)
-              // No action attribute = submits to current page, Netlify redirects automatically
-              form.submit();
+                // Redirect to success page (matching joinery's ?success=true)
+                if (typeof window !== "undefined") {
+                  window.location.href = "/contact?success=true";
+                }
+              } catch (err) {
+                setSubmitError(
+                  err instanceof Error
+                    ? err.message
+                    : "Submission failed. Please try again."
+                );
+                setIsSubmitting(false);
+              }
             }}
           >
             {/* Required for Netlify Forms */}
